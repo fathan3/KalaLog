@@ -36,16 +36,13 @@ export default function ThreadInput() {
         <Textarea 
           ref={textareaRef}
           placeholder="Tuliskan log untuk waktu ini..." 
-          className="min-h-[140px] w-full resize-none bg-white/[0.02] border border-white/5 rounded-b-xl rounded-t-none p-5 focus-visible:ring-1 focus-visible:ring-emerald-500/50 text-lg placeholder:text-zinc-600 transition-all focus:bg-white/[0.04] leading-relaxed relative z-0"
+          className="min-h-[140px] w-full resize-none bg-white/[0.02] border border-white/5 rounded-b-xl rounded-t-none p-5 focus-visible:ring-1 focus-visible:ring-sky-500/50 text-lg placeholder:text-zinc-600 transition-all focus:bg-white/[0.04] leading-relaxed relative z-0"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={isPending}
         />
       </div>
-      <div className="flex justify-between items-center mt-2">
-        <span className="text-xs text-zinc-600 pl-2">
-          Mendukung Markdown (*tebal*, _miring_, `kutip miring / backtick`, &gt; kutipan)
-        </span>
+      <div className="flex justify-end mt-2">
         <Button 
           onClick={handleSubmit}
           className="rounded-full px-8 py-6 text-md font-bold tracking-wide bg-zinc-100 text-zinc-900 shadow-xl shadow-white/5 hover:bg-white hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100" 

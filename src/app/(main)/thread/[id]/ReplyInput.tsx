@@ -44,7 +44,7 @@ export default function ReplyInput({ parentId, onSuccess }: ReplyInputProps) {
         <Textarea 
           ref={textareaRef}
           placeholder="Tulis balasan Anda..." 
-          className="min-h-[100px] w-full resize-none bg-black/40 border border-white/5 rounded-b-xl rounded-t-none p-4 focus-visible:ring-1 focus-visible:ring-emerald-500/50 text-base placeholder:text-zinc-600 transition-all leading-relaxed relative z-0"
+          className="min-h-[100px] w-full resize-none bg-black/40 border border-white/5 rounded-b-xl rounded-t-none p-4 focus-visible:ring-1 focus-visible:ring-sky-500/50 text-base placeholder:text-zinc-600 transition-all leading-relaxed relative z-0"
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
@@ -54,7 +54,7 @@ export default function ReplyInput({ parentId, onSuccess }: ReplyInputProps) {
         />
       </div>
       {error && <p className="text-red-400 text-sm">{error}</p>}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-end">
         <Button 
           onClick={handleSubmit} 
           disabled={!content.trim() || isPending}

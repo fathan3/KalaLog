@@ -23,7 +23,7 @@ export default function MarkdownRenderer({ content, className = "", isQuote = fa
           // Links
           a: ({ node, ...props }) => (
             <a 
-              className="text-emerald-400 hover:text-emerald-300 hover:underline underline-offset-4 transition-colors font-medium break-all" 
+              className="text-sky-400 hover:text-sky-300 hover:underline underline-offset-4 transition-colors font-medium break-all" 
               target="_blank" 
               rel="noopener noreferrer" 
               {...props} 
@@ -40,7 +40,7 @@ export default function MarkdownRenderer({ content, className = "", isQuote = fa
           // Blockquotes
           blockquote: ({ node, ...props }) => (
             <blockquote 
-              className="border-l-2 border-emerald-500/50 pl-4 py-1 italic text-zinc-400 my-4 bg-emerald-500/5 rounded-r-lg" 
+              className="border-l-2 border-sky-500/50 pl-4 py-1 italic text-zinc-400 my-4 bg-sky-500/5 rounded-r-lg" 
               {...props} 
             />
           ),
@@ -67,7 +67,7 @@ export default function MarkdownRenderer({ content, className = "", isQuote = fa
           code: ({ node, className, children, ...props }: any) => {
             return (
               <code 
-                className="bg-zinc-800/80 text-emerald-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-zinc-700/50" 
+                className="bg-zinc-800/80 text-sky-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-zinc-700/50" 
                 {...props}
               >
                 {children}

@@ -80,7 +80,7 @@ function ToolbarButton({ onClick, icon, title, disabled }: { onClick: () => void
       }}
       disabled={disabled}
       title={title}
-      className="p-1.5 text-zinc-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="p-1.5 text-zinc-400 hover:text-sky-400 hover:bg-sky-400/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {icon}
     </button>
