@@ -24,7 +24,7 @@ export default function Loading() {
         </div>
 
         <div className="relative space-y-2 mt-8">
-          <div className="absolute left-[2.25rem] top-0 bottom-8 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
+          <div className="absolute left-[23px] top-0 bottom-8 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
           
           <h2 className="text-sm font-semibold text-zinc-500 mb-6 pl-4 uppercase tracking-wider">Balasan</h2>
 

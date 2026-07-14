@@ -47,7 +47,7 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto w-full h-full p-4 md:p-8 mt-24">
-      <main className="lg:col-span-8 lg:col-start-3 max-w-3xl w-full">
+      <main className="lg:col-span-8 lg:col-start-3 max-w-4xl w-full">
         <div className="mb-8 flex items-center space-x-4">
           <Link href="/" className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-zinc-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -85,7 +85,7 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
 
         {post.replies.length > 0 && (
           <div className="relative space-y-2 mt-8">
-            <div className="absolute left-[2.25rem] top-0 bottom-8 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
+            <div className="absolute left-[23px] top-0 bottom-8 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
             
             <h2 className="text-sm font-semibold text-zinc-500 mb-6 pl-4 uppercase tracking-wider">Balasan</h2>
 

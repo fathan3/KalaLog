@@ -24,7 +24,7 @@ export default function Loading() {
           </div>
           
           <div className="pt-8 relative">
-            <div className="absolute left-[2.25rem] top-8 bottom-0 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
+            <div className="absolute left-[23px] top-8 bottom-0 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
             <div className="space-y-2">
               <ThreadSkeleton />
               <ThreadSkeleton />

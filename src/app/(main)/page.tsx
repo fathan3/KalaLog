@@ -43,7 +43,7 @@ export default async function Home() {
   return (
     <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pt-12 pb-24">
       {/* Left Column (Sticky Sidebar) */}
-      <aside className="lg:col-span-5 flex flex-col space-y-12">
+      <aside className="lg:col-span-4 flex flex-col space-y-12">
         <div className="sticky top-12 flex flex-col min-h-[calc(100vh-6rem)]">
           <div>
             <Clock />
@@ -76,9 +76,9 @@ export default async function Home() {
       </aside>
 
       {/* Right Column (Timeline Feed) */}
-      <section className="lg:col-span-7 relative pt-4">
+      <section className="lg:col-span-8 relative pt-4">
         {/* Glow Line Background */}
-        <div className="absolute left-[29px] top-6 bottom-0 w-[2px] bg-gradient-to-b from-zinc-700/80 via-zinc-800/30 to-transparent"></div>
+        <div className="absolute left-[23px] top-6 bottom-0 w-[2px] bg-gradient-to-b from-zinc-700/80 via-zinc-800/30 to-transparent"></div>
         
         <div className="flex flex-col relative">
           {posts.map((post) => (
