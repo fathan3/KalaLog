@@ -1,42 +1,62 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { replyToPost } from "@/actions/post.actions";
+import MarkdownToolbar from "@/components/MarkdownToolbar";
 
-export default function ReplyInput({ postId }: { postId: string }) {
+interface ReplyInputProps {
+  parentId: string;
+  onSuccess?: () => void;
+}
+
+export default function ReplyInput({ parentId, onSuccess }: ReplyInputProps) {
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
     if (!content.trim()) return;
     setError("");
 
     startTransition(async () => {
-      const res = await replyToPost(postId, content);
+      const res = await replyToPost(parentId, content);
       if (res?.error) {
         setError(res.error);
       } else {
         setContent("");
+        if (onSuccess) onSuccess();
       }
     });
   };
 
   return (
-    <div className="flex flex-col space-y-4">
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Ketikkan balasan Anda di sini..."
-        className="min-h-[120px] bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-zinc-500 focus-visible:border-transparent resize-none text-[17px] leading-relaxed transition-all"
-        disabled={isPending}
-      />
+    <div className="flex flex-col space-y-3 w-full animate-in fade-in slide-in-from-top-4 duration-300">
+      <div className="flex flex-col w-full group">
+        <MarkdownToolbar 
+          textareaRef={textareaRef} 
+          content={content} 
+          setContent={setContent} 
+          disabled={isPending} 
+        />
+        <Textarea 
+          ref={textareaRef}
+          placeholder="Tulis balasan Anda..." 
+          className="min-h-[100px] w-full resize-none bg-black/40 border border-white/5 rounded-b-xl rounded-t-none p-4 focus-visible:ring-1 focus-visible:ring-emerald-500/50 text-base placeholder:text-zinc-600 transition-all leading-relaxed relative z-0"
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            if (error) setError(null);
+          }}
+          disabled={isPending}
+        />
+      </div>
       {error && <p className="text-red-400 text-sm">{error}</p>}
       <div className="flex justify-between items-center">
         <span className="text-xs text-zinc-600 pl-2">
-          ✨ Mendukung Markdown (*tebal*, _miring_, `kode`, &gt; kutipan)
+          ✨ Mendukung Markdown (*tebal*, _miring_, `kutip miring / backtick`, &gt; kutipan)
         </span>
         <Button 
           onClick={handleSubmit} 

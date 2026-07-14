@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { createPost } from "@/actions/post.actions";
+import MarkdownToolbar from "./MarkdownToolbar";
 
 export default function ThreadInput() {
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
     if (!content.trim() || isPending) return;
@@ -24,16 +26,25 @@ export default function ThreadInput() {
 
   return (
     <div className="flex flex-col space-y-4 w-full">
-      <Textarea 
-        placeholder="Tuliskan log untuk waktu ini..." 
-        className="min-h-[140px] w-full resize-none bg-white/[0.02] border border-white/5 rounded-xl p-5 focus-visible:ring-1 focus-visible:ring-zinc-700 text-lg placeholder:text-zinc-600 transition-all focus:bg-white/[0.04] leading-relaxed"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        disabled={isPending}
-      />
+      <div className="flex flex-col w-full group">
+        <MarkdownToolbar 
+          textareaRef={textareaRef} 
+          content={content} 
+          setContent={setContent} 
+          disabled={isPending} 
+        />
+        <Textarea 
+          ref={textareaRef}
+          placeholder="Tuliskan log untuk waktu ini..." 
+          className="min-h-[140px] w-full resize-none bg-white/[0.02] border border-white/5 rounded-b-xl rounded-t-none p-5 focus-visible:ring-1 focus-visible:ring-emerald-500/50 text-lg placeholder:text-zinc-600 transition-all focus:bg-white/[0.04] leading-relaxed relative z-0"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          disabled={isPending}
+        />
+      </div>
       <div className="flex justify-between items-center mt-2">
         <span className="text-xs text-zinc-600 pl-2">
-          ✨ Mendukung Markdown (*tebal*, _miring_, `kode`, &gt; kutipan)
+          Mendukung Markdown (*tebal*, _miring_, `kutip miring / backtick`, &gt; kutipan)
         </span>
         <Button 
           onClick={handleSubmit}
