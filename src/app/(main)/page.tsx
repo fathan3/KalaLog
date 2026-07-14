@@ -1,8 +1,9 @@
 import ThreadInput from "@/components/ThreadInput";
-import ThreadCard from "@/components/ThreadCard";
+import InfiniteFeed from "@/components/InfiniteFeed";
 import Clock from "@/components/Clock";
 import LogoutButton from "@/components/LogoutButton";
 import prisma from "@/lib/prisma";
+import { getPosts } from "@/actions/post.actions";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { formatRelativeTime } from "@/lib/utils";
@@ -21,24 +22,9 @@ export default async function Home() {
     });
   }
   
-  const posts = await prisma.post.findMany({
-    where: {
-      parentId: null
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
-    include: {
-      user: true,
-      likes: true,
-      _count: {
-        select: {
-          replies: true,
-          likes: true
-        }
-      }
-    }
-  });
+  const result = await getPosts({ limit: 10 });
+  const posts = result.posts;
+  const nextCursor = result.nextCursor;
 
   return (
     <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pt-12 pb-24">
@@ -81,30 +67,11 @@ export default async function Home() {
         {/* Glow Line Background */}
         <div className="absolute left-[23px] top-6 bottom-0 w-[2px] bg-gradient-to-b from-zinc-700/80 via-zinc-800/30 to-transparent"></div>
         
-        <div className="flex flex-col relative">
-          {posts.map((post) => (
-            <ThreadCard 
-              key={post.id}
-              id={post.id}
-              author={post.user.name || "Anonim"}
-              handle={post.user.username || post.user.email?.split('@')[0] || post.user.id.substring(0, 8)}
-              time={formatRelativeTime(post.createdAt)}
-              content={post.content}
-              likes={post._count.likes}
-              replies={post._count.replies}
-              isLiked={session?.user?.id ? post.likes.some(like => like.userId === session.user.id) : false}
-              isOwner={session?.user?.id === post.userId}
-              createdAt={post.createdAt}
-              updatedAt={post.updatedAt}
-            />
-          ))}
-
-          {posts.length === 0 && (
-            <div className="pl-16 pt-8 text-zinc-500 font-medium">
-              Belum ada catatan log waktu. Silakan ukir sejarah pertama Anda.
-            </div>
-          )}
-        </div>
+        <InfiniteFeed 
+          initialPosts={posts as any} 
+          initialNextCursor={nextCursor} 
+          currentUserId={session?.user?.id} 
+        />
       </section>
     </main>
   )

@@ -164,3 +164,49 @@ export async function editPost(postId: string, newContent: string) {
     return { error: "Gagal mengedit catatan" };
   }
 }
+
+export async function getPosts({
+  cursor,
+  limit = 10,
+  username
+}: {
+  cursor?: string;
+  limit?: number;
+  username?: string;
+}) {
+  try {
+    const whereCondition: any = { parentId: null };
+    
+    if (username) {
+      const targetUser = await prisma.user.findUnique({
+        where: { username }
+      });
+      if (!targetUser) return { posts: [] };
+      whereCondition.userId = targetUser.id;
+    }
+
+    const posts = await prisma.post.findMany({
+      where: whereCondition,
+      take: limit + 1, // Fetch one extra to know if there's a next page
+      cursor: cursor ? { id: cursor } : undefined,
+      skip: cursor ? 1 : 0, // Skip the cursor itself
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { id: true, name: true, username: true } },
+        likes: { select: { userId: true } },
+        _count: { select: { replies: true, likes: true } },
+      },
+    });
+
+    let nextCursor: string | undefined = undefined;
+    if (posts.length > limit) {
+      const nextItem = posts.pop(); // Remove the extra item
+      nextCursor = nextItem?.id;
+    }
+
+    return { posts, nextCursor };
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    return { posts: [], error: "Failed to fetch posts" };
+  }
+}

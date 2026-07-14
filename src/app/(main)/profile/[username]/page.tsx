@@ -4,6 +4,8 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import ThreadCard from "@/components/ThreadCard"
 import EditProfileDialog from "@/components/EditProfileDialog"
+import InfiniteFeed from "@/components/InfiniteFeed"
+import { getPosts } from "@/actions/post.actions"
 import LogoutButton from "@/components/LogoutButton"
 import { formatRelativeTime } from "@/lib/utils"
 
@@ -14,20 +16,19 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const profileUser = await prisma.user.findUnique({
     where: { username: username },
     include: {
-      posts: {
-        where: {
-          parentId: null
-        },
-        orderBy: { createdAt: 'desc' },
-        include: {
-          likes: true,
-          _count: {
-            select: { replies: true, likes: true }
+      _count: {
+        select: {
+          posts: {
+            where: { parentId: null }
           }
         }
       }
     }
   })
+
+  const result = await getPosts({ username, limit: 10 });
+  const posts = result.posts;
+  const nextCursor = result.nextCursor;
 
   if (!profileUser) {
     notFound()
@@ -62,7 +63,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               
               <div className="mt-8 flex space-x-6 text-sm">
                 <div>
-                  <span className="text-white font-bold block text-lg">{profileUser.posts.length}</span>
+                  <span className="text-white font-bold block text-lg">{profileUser._count.posts}</span>
                   <span className="text-zinc-600">Catatan Waktu</span>
                 </div>
               </div>
@@ -91,28 +92,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             <h2 className="text-xl font-medium text-zinc-400">Riwayat Catatan</h2>
           </div>
 
-          {profileUser.posts.map((post) => (
-            <ThreadCard 
-              key={post.id}
-              id={post.id}
-              author={profileUser.name || "Anonim"}
-              handle={profileUser.username || "anon"}
-              time={formatRelativeTime(post.createdAt)}
-              content={post.content}
-              likes={post._count.likes}
-              replies={post._count.replies}
-              isLiked={session?.user?.id ? post.likes.some(like => like.userId === session.user.id) : false}
-              isOwner={session?.user?.id === post.userId}
-              createdAt={post.createdAt}
-              updatedAt={post.updatedAt}
-            />
-          ))}
-
-          {profileUser.posts.length === 0 && (
-            <div className="pl-16 pt-8 text-zinc-500 font-medium">
-              Belum ada sejarah yang dicatat oleh pengguna ini.
-            </div>
-          )}
+          <InfiniteFeed 
+            initialPosts={posts as any} 
+            initialNextCursor={nextCursor} 
+            username={username}
+            currentUserId={session?.user?.id} 
+          />
         </div>
       </section>
     </main>
