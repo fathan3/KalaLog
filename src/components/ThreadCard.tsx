@@ -2,6 +2,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import LikeButton from "./LikeButton";
 import ThreadOptions from "./ThreadOptions";
+import ExportQuoteDialog from "./ExportQuoteDialog";
 
 interface ThreadCardProps {
   id: string;
@@ -73,8 +74,15 @@ export default function ThreadCard({
             </div>
             <span className="text-xs font-semibold">{replies}</span>
           </Link>
-          
           <LikeButton postId={id} initialLikes={likes} initialLikedByUser={isLiked} />
+
+          <ExportQuoteDialog 
+            content={content} 
+            author={author} 
+            handle={handle} 
+            date={date} 
+            time={time} 
+          />
         </div>
       </div>
     </article>
