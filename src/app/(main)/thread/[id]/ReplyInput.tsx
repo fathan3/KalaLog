@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { replyToPost } from "@/actions/post.actions";
@@ -16,6 +16,24 @@ export default function ReplyInput({ parentId, onSuccess }: ReplyInputProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const DRAFT_KEY = `kalalog-draft-reply-${parentId}`;
+
+  // Load draft on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      setContent(savedDraft);
+    }
+  }, [DRAFT_KEY]);
+
+  // Save draft on change
+  useEffect(() => {
+    if (content.trim()) {
+      localStorage.setItem(DRAFT_KEY, content);
+    } else {
+      localStorage.removeItem(DRAFT_KEY);
+    }
+  }, [content, DRAFT_KEY]);
 
   const handleSubmit = () => {
     if (!content.trim()) return;
@@ -27,6 +45,7 @@ export default function ReplyInput({ parentId, onSuccess }: ReplyInputProps) {
         setError(res.error);
       } else {
         setContent("");
+        localStorage.removeItem(DRAFT_KEY); // Clear draft
         if (onSuccess) onSuccess();
       }
     });

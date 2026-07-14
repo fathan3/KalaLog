@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { createPost } from "@/actions/post.actions";
@@ -10,6 +10,24 @@ export default function ThreadInput() {
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const DRAFT_KEY = "kalalog-draft-home";
+
+  // Load draft on mount
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft) {
+      setContent(savedDraft);
+    }
+  }, []);
+
+  // Save draft on change
+  useEffect(() => {
+    if (content.trim()) {
+      localStorage.setItem(DRAFT_KEY, content);
+    } else {
+      localStorage.removeItem(DRAFT_KEY);
+    }
+  }, [content]);
 
   const handleSubmit = () => {
     if (!content.trim() || isPending) return;
@@ -20,6 +38,7 @@ export default function ThreadInput() {
         alert(result.error);
       } else {
         setContent(""); // Clear input on success
+        localStorage.removeItem(DRAFT_KEY); // Clear draft
       }
     });
   };

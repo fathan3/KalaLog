@@ -5,6 +5,7 @@ import { deletePost, editPost } from "@/actions/post.actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import MarkdownToolbar from "./MarkdownToolbar";
 
 interface ThreadOptionsProps {
   postId: string;
@@ -20,6 +21,7 @@ export default function ThreadOptions({ postId, initialContent, createdAt }: Thr
   const [editContent, setEditContent] = useState(initialContent);
   const [error, setError] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
+  const editRef = useRef<HTMLTextAreaElement>(null);
 
   const now = new Date();
   const diffInMinutes = (now.getTime() - new Date(createdAt).getTime()) / (1000 * 60);
@@ -101,12 +103,21 @@ export default function ThreadOptions({ postId, initialContent, createdAt }: Thr
             <DialogTitle>Edit Catatan</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <Textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              className="min-h-[120px] bg-white/[0.02] border border-white/10 rounded-xl p-4 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-zinc-500 resize-none"
-              disabled={isPending}
-            />
+            <div className="flex flex-col w-full group">
+              <MarkdownToolbar 
+                textareaRef={editRef} 
+                content={editContent} 
+                setContent={setEditContent} 
+                disabled={isPending} 
+              />
+              <Textarea
+                ref={editRef}
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="min-h-[120px] bg-black/40 border border-white/10 rounded-b-xl rounded-t-none p-4 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-sky-500/50 resize-none transition-all leading-relaxed relative z-0"
+                disabled={isPending}
+              />
+            </div>
             {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
           </div>
           <DialogFooter>

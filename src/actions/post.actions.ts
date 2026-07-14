@@ -66,6 +66,41 @@ export async function toggleLike(postId: string) {
   }
 }
 
+export async function toggleBookmark(postId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthenticated");
+
+    const existingBookmark = await prisma.bookmark.findUnique({
+      where: {
+        userId_postId: {
+          userId: session.user.id,
+          postId: postId
+        }
+      }
+    });
+
+    if (existingBookmark) {
+      await prisma.bookmark.delete({
+        where: { id: existingBookmark.id }
+      });
+    } else {
+      await prisma.bookmark.create({
+        data: {
+          userId: session.user.id,
+          postId: postId
+        }
+      });
+    }
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to toggle bookmark:", error);
+    return { error: "Gagal menyimpan catatan" };
+  }
+}
+
 export async function replyToPost(postId: string, content: string) {
   try {
     const session = await auth();
@@ -168,11 +203,15 @@ export async function editPost(postId: string, newContent: string) {
 export async function getPosts({
   cursor,
   limit = 10,
-  username
+  username,
+  query,
+  bookmarksOnly
 }: {
   cursor?: string;
   limit?: number;
   username?: string;
+  query?: string;
+  bookmarksOnly?: boolean;
 }) {
   try {
     const whereCondition: any = { parentId: null };
@@ -185,6 +224,25 @@ export async function getPosts({
       whereCondition.userId = targetUser.id;
     }
 
+    if (query) {
+      whereCondition.content = {
+        contains: query,
+        mode: "insensitive"
+      };
+    }
+
+    if (bookmarksOnly) {
+      const session = await auth();
+      if (!session?.user?.id) return { posts: [] };
+      
+      // If filtering by bookmarks, we want to get posts bookmarked by the user
+      whereCondition.bookmarks = {
+        some: {
+          userId: session.user.id
+        }
+      };
+    }
+
     const posts = await prisma.post.findMany({
       where: whereCondition,
       take: limit + 1, // Fetch one extra to know if there's a next page
@@ -194,6 +252,7 @@ export async function getPosts({
       include: {
         user: { select: { id: true, name: true, username: true } },
         likes: { select: { userId: true } },
+        bookmarks: { select: { userId: true } },
         _count: { select: { replies: true, likes: true } },
       },
     });

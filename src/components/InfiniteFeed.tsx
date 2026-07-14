@@ -18,6 +18,7 @@ interface Post {
     username: string | null;
   };
   likes: { userId: string }[];
+  bookmarks?: { userId: string }[];
   _count: {
     replies: number;
     likes: number;
@@ -29,13 +30,17 @@ interface InfiniteFeedProps {
   initialNextCursor?: string;
   username?: string;
   currentUserId?: string;
+  searchQuery?: string;
+  bookmarksOnly?: boolean;
 }
 
 export default function InfiniteFeed({
   initialPosts,
   initialNextCursor,
   username,
-  currentUserId
+  currentUserId,
+  searchQuery,
+  bookmarksOnly
 }: InfiniteFeedProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [nextCursor, setNextCursor] = useState<string | undefined>(initialNextCursor);
@@ -46,7 +51,7 @@ export default function InfiniteFeed({
     if (!nextCursor || isLoading) return;
     
     setIsLoading(true);
-    const result = await getPosts({ cursor: nextCursor, limit: 10, username });
+    const result = await getPosts({ cursor: nextCursor, limit: 10, username, query: searchQuery, bookmarksOnly });
     
     if (result.posts && result.posts.length > 0) {
       setPosts(prev => {
@@ -61,7 +66,7 @@ export default function InfiniteFeed({
     }
     
     setIsLoading(false);
-  }, [nextCursor, isLoading, username]);
+  }, [nextCursor, isLoading, username, searchQuery, bookmarksOnly]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -91,6 +96,11 @@ export default function InfiniteFeed({
     return likes.some(like => like.userId === currentUserId);
   };
 
+  const isBookmarkedByMe = (bookmarks?: { userId: string }[]) => {
+    if (!currentUserId || !bookmarks) return false;
+    return bookmarks.some(bookmark => bookmark.userId === currentUserId);
+  };
+
   return (
     <div className="flex flex-col relative">
       {posts.map((post) => (
@@ -104,6 +114,7 @@ export default function InfiniteFeed({
           likes={post._count.likes}
           replies={post._count.replies}
           isLiked={isLikedByMe(post.likes)}
+          isBookmarked={isBookmarkedByMe(post.bookmarks)}
           isOwner={currentUserId === post.userId}
           createdAt={post.createdAt}
           updatedAt={post.updatedAt}

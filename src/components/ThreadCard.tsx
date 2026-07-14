@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LikeButton from "./LikeButton";
+import BookmarkButton from "./BookmarkButton";
 import ThreadOptions from "./ThreadOptions";
 import ExportQuoteDialog from "./ExportQuoteDialog";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -14,13 +15,14 @@ interface ThreadCardProps {
   likes: number;
   replies: number;
   isLiked: boolean;
+  isBookmarked?: boolean;
   isOwner?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export default function ThreadCard({ 
-  id, author, handle, time, date, content, likes, replies, isLiked, isOwner, createdAt, updatedAt 
+  id, author, handle, time, date, content, likes, replies, isLiked, isBookmarked = false, isOwner, createdAt, updatedAt 
 }: ThreadCardProps) {
   
   const isEdited = createdAt && updatedAt && new Date(updatedAt).getTime() - new Date(createdAt).getTime() > 1000;
@@ -73,14 +75,18 @@ export default function ThreadCard({
             <span className="text-xs font-semibold">{replies}</span>
           </Link>
           <LikeButton postId={id} initialLikes={likes} initialLikedByUser={isLiked} />
-
-          <ExportQuoteDialog 
-            content={content} 
-            author={author} 
-            handle={handle} 
-            date={date} 
-            time={time} 
-          />
+          
+          <div className="flex items-center space-x-4">
+            <BookmarkButton postId={id} initialBookmarked={isBookmarked} />
+            
+            <ExportQuoteDialog 
+              content={content} 
+              author={author} 
+              handle={handle} 
+              date={date} 
+              time={time} 
+            />
+          </div>
         </div>
       </div>
     </article>

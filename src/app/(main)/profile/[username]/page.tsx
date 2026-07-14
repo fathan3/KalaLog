@@ -9,9 +9,17 @@ import { getPosts } from "@/actions/post.actions"
 import LogoutButton from "@/components/LogoutButton"
 import { formatRelativeTime } from "@/lib/utils"
 
-export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
+export default async function ProfilePage({ 
+  params,
+  searchParams
+}: { 
+  params: Promise<{ username: string }>,
+  searchParams: Promise<{ tab?: string }>
+}) {
   const session = await auth()
   const { username } = await params;
+  const resolvedSearchParams = await searchParams;
+  const tab = resolvedSearchParams.tab || "posts";
   
   const profileUser = await prisma.user.findUnique({
     where: { username: username },
@@ -26,15 +34,21 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     }
   })
 
-  const result = await getPosts({ username, limit: 10 });
+  const isOwnProfile = session?.user?.id === profileUser.id
+  
+  const isBookmarksTab = tab === "bookmarks" && isOwnProfile;
+
+  const result = await getPosts({ 
+    username: isBookmarksTab ? undefined : username, 
+    limit: 10,
+    bookmarksOnly: isBookmarksTab
+  });
   const posts = result.posts;
   const nextCursor = result.nextCursor;
 
   if (!profileUser) {
     notFound()
   }
-
-  const isOwnProfile = session?.user?.id === profileUser.id
 
   return (
     <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto w-full h-full p-4 md:p-8 mt-12 md:mt-24">
@@ -88,14 +102,28 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
         <div className="absolute left-[23px] top-8 bottom-0 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent"></div>
         
         <div className="flex flex-col relative">
-          <div className="mb-10 pl-16">
-            <h2 className="text-xl font-medium text-zinc-400">Riwayat Catatan</h2>
+          <div className="mb-10 pl-16 flex items-center space-x-6 border-b border-white/10 pb-4">
+            <Link 
+              href={`/profile/${username}`}
+              className={`text-lg font-medium transition-colors ${!isBookmarksTab ? 'text-zinc-100 border-b-2 border-white pb-4 -mb-[17px]' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              Postingan
+            </Link>
+            {isOwnProfile && (
+              <Link 
+                href={`/profile/${username}?tab=bookmarks`}
+                className={`text-lg font-medium transition-colors ${isBookmarksTab ? 'text-zinc-100 border-b-2 border-white pb-4 -mb-[17px]' : 'text-zinc-500 hover:text-zinc-300'}`}
+              >
+                Tersimpan
+              </Link>
+            )}
           </div>
 
           <InfiniteFeed 
             initialPosts={posts as any} 
             initialNextCursor={nextCursor} 
-            username={username}
+            username={isBookmarksTab ? undefined : username}
+            bookmarksOnly={isBookmarksTab}
             currentUserId={session?.user?.id} 
           />
         </div>
