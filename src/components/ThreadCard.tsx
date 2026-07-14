@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import Link from "next/link";
 import LikeButton from "./LikeButton";
+import ThreadOptions from "./ThreadOptions";
 
 interface ThreadCardProps {
   id: string;
@@ -12,11 +13,23 @@ interface ThreadCardProps {
   likes: number;
   replies: number;
   isLiked: boolean;
+  isOwner?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export default function ThreadCard({ id, author, handle, time, date, content, likes, replies, isLiked }: ThreadCardProps) {
+export default function ThreadCard({ 
+  id, author, handle, time, date, content, likes, replies, isLiked, isOwner, createdAt, updatedAt 
+}: ThreadCardProps) {
+  
+  const isEdited = createdAt && updatedAt && new Date(updatedAt).getTime() - new Date(createdAt).getTime() > 1000;
+
   return (
     <article className="group relative flex gap-6 py-8 transition-all hover:bg-white/[0.01] -mx-4 px-4 rounded-2xl">
+      {isOwner && createdAt && (
+        <ThreadOptions postId={id} initialContent={content} createdAt={createdAt} />
+      )}
+      
       {/* Timeline Node */}
       <div className="relative flex flex-col items-center shrink-0 w-12 pt-0.5">
         <div className="absolute top-[0.65rem] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-zinc-500 ring-[6px] ring-background shadow-[0_0_12px_rgba(161,161,170,0.5)] group-hover:bg-zinc-100 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-300 z-10"></div>
@@ -34,12 +47,12 @@ export default function ThreadCard({ id, author, handle, time, date, content, li
 
       {/* Content */}
       <div className="flex-1 flex flex-col space-y-3">
-        <p className="text-zinc-200 leading-relaxed text-[17px] tracking-wide font-light whitespace-pre-wrap">
+        <p className="text-zinc-200 leading-relaxed text-[17px] tracking-wide font-light whitespace-pre-wrap pr-4">
           {content}
         </p>
         
         {/* Author Signature */}
-        <div className="flex items-center space-x-2 pt-1 opacity-80">
+        <div className="flex items-center space-x-2 pt-1 opacity-80 flex-wrap gap-y-1">
           <span className="w-5 h-[1px] bg-zinc-700"></span>
           <Link href={`/profile/${handle}`} className="text-sm text-zinc-400 font-medium tracking-wide hover:text-zinc-200 cursor-pointer transition-colors">
             {author}
@@ -47,6 +60,9 @@ export default function ThreadCard({ id, author, handle, time, date, content, li
           <Link href={`/profile/${handle}`} className="text-sm text-zinc-600 hover:text-zinc-400 transition-colors">
             @{handle}
           </Link>
+          {isEdited && (
+            <span className="text-xs text-zinc-600 italic ml-2">(diedit)</span>
+          )}
         </div>
         
         {/* Interaction (Subtle, appears on hover) */}

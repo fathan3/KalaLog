@@ -73,6 +73,9 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
             likes={post._count.likes}
             replies={post._count.replies}
             isLiked={isLikedByMe(post.likes)}
+            isOwner={session?.user?.id === post.userId}
+            createdAt={post.createdAt}
+            updatedAt={post.updatedAt}
           />
         </div>
 
@@ -97,6 +100,9 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
                 likes={reply._count.likes}
                 replies={reply._count.replies}
                 isLiked={isLikedByMe(reply.likes)}
+                isOwner={session?.user?.id === reply.userId}
+                createdAt={reply.createdAt}
+                updatedAt={reply.updatedAt}
               />
             ))}
           </div>

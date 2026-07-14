@@ -102,6 +102,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               likes={post._count.likes}
               replies={post._count.replies}
               isLiked={session?.user?.id ? post.likes.some(like => like.userId === session.user.id) : false}
+              isOwner={session?.user?.id === post.userId}
+              createdAt={post.createdAt}
+              updatedAt={post.updatedAt}
             />
           ))}
 

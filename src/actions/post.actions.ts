@@ -85,3 +85,77 @@ export async function replyToPost(postId: string, content: string) {
     return { error: "Gagal membalas catatan" };
   }
 }
+
+export async function deletePost(postId: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthenticated");
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { userId: true }
+    });
+
+    if (!post) {
+      return { error: "Catatan tidak ditemukan" };
+    }
+
+    if (post.userId !== session.user.id) {
+      return { error: "Anda tidak berhak menghapus catatan ini" };
+    }
+
+    await prisma.post.delete({
+      where: { id: postId }
+    });
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    return { error: "Gagal menghapus catatan" };
+  }
+}
+
+export async function editPost(postId: string, newContent: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error("Unauthenticated");
+
+    if (!newContent || !newContent.trim()) {
+      return { error: "Konten tidak boleh kosong" };
+    }
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { userId: true, createdAt: true }
+    });
+
+    if (!post) {
+      return { error: "Catatan tidak ditemukan" };
+    }
+
+    if (post.userId !== session.user.id) {
+      return { error: "Anda tidak berhak mengedit catatan ini" };
+    }
+
+    const now = new Date();
+    const diffInMinutes = (now.getTime() - post.createdAt.getTime()) / (1000 * 60);
+
+    if (diffInMinutes > 15) {
+      return { error: "Waktu edit (15 menit) sudah habis." };
+    }
+
+    await prisma.post.update({
+      where: { id: postId },
+      data: {
+        content: newContent.trim(),
+      }
+    });
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to edit post:", error);
+    return { error: "Gagal mengedit catatan" };
+  }
+}
