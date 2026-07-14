@@ -56,22 +56,22 @@ export default function MarkdownRenderer({ content, className = "", isQuote = fa
           li: ({ node, ...props }) => (
             <li className="leading-relaxed" {...props} />
           ),
-          // Inline and Block Code
-          code({ node, inline, className, children, ...props }: any) {
-            if (inline) {
-              return (
-                <code 
-                  className="bg-zinc-800/80 text-emerald-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-zinc-700/50" 
-                  {...props}
-                >
-                  {children}
-                </code>
-              );
-            }
+          // Preformatted text (Block Code wrapper)
+          pre: ({ node, ...props }) => (
+            <pre 
+              className="block bg-[#0d1117] text-zinc-200 p-4 rounded-xl text-sm font-mono overflow-x-auto my-4 border border-zinc-800/80 shadow-inner [&>code]:bg-transparent [&>code]:text-inherit [&>code]:p-0 [&>code]:border-none" 
+              {...props} 
+            />
+          ),
+          // Inline and Block Code inner element
+          code: ({ node, className, children, ...props }: any) => {
             return (
-              <pre className="block bg-[#0d1117] text-zinc-200 p-4 rounded-xl text-sm font-mono overflow-x-auto my-4 border border-zinc-800/80 shadow-inner">
-                <code {...props}>{children}</code>
-              </pre>
+              <code 
+                className="bg-zinc-800/80 text-emerald-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-zinc-700/50" 
+                {...props}
+              >
+                {children}
+              </code>
             );
           },
           // Strikethrough
