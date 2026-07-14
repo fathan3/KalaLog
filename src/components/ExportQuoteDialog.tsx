@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import * as htmlToImage from "html-to-image";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface ExportQuoteDialogProps {
   content: string;
@@ -90,9 +91,9 @@ export default function ExportQuoteDialog({ content, author, handle, date, time 
             </div>
 
             {/* Quote Content */}
-            <p className="text-zinc-100 text-center leading-relaxed text-lg tracking-wide font-medium whitespace-pre-wrap z-10 font-serif">
-              "{content}"
-            </p>
+            <div className="z-10 w-full text-center font-serif">
+              <MarkdownRenderer content={content} isQuote={true} className="mx-auto" />
+            </div>
 
             {/* Author Info */}
             <div className="mt-8 flex flex-col items-center z-10">

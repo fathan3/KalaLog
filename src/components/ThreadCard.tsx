@@ -1,8 +1,8 @@
-import { Button } from "./ui/button";
 import Link from "next/link";
 import LikeButton from "./LikeButton";
 import ThreadOptions from "./ThreadOptions";
 import ExportQuoteDialog from "./ExportQuoteDialog";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface ThreadCardProps {
   id: string;
@@ -48,9 +48,7 @@ export default function ThreadCard({
 
       {/* Content */}
       <div className="flex-1 flex flex-col space-y-3">
-        <p className="text-zinc-200 leading-relaxed text-[17px] tracking-wide font-light whitespace-pre-wrap pr-4">
-          {content}
-        </p>
+        <MarkdownRenderer content={content} />
         
         {/* Author Signature */}
         <div className="flex items-center space-x-2 pt-1 opacity-80 flex-wrap gap-y-1">

@@ -31,7 +31,10 @@ export default function ThreadInput() {
         onChange={(e) => setContent(e.target.value)}
         disabled={isPending}
       />
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center mt-2">
+        <span className="text-xs text-zinc-600 pl-2">
+          ✨ Mendukung Markdown (*tebal*, _miring_, `kode`, &gt; kutipan)
+        </span>
         <Button 
           onClick={handleSubmit}
           className="rounded-full px-8 py-6 text-md font-bold tracking-wide bg-zinc-100 text-zinc-900 shadow-xl shadow-white/5 hover:bg-white hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100" 

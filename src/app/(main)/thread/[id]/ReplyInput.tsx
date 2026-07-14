@@ -34,7 +34,10 @@ export default function ReplyInput({ postId }: { postId: string }) {
         disabled={isPending}
       />
       {error && <p className="text-red-400 text-sm">{error}</p>}
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <span className="text-xs text-zinc-600 pl-2">
+          ✨ Mendukung Markdown (*tebal*, _miring_, `kode`, &gt; kutipan)
+        </span>
         <Button 
           onClick={handleSubmit} 
           disabled={!content.trim() || isPending}
