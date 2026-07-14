@@ -30,13 +30,11 @@ export default function EditProfileDialog({
     setError("")
     startTransition(async () => {
       const res = await updateProfile({ name, username })
-      if (res.error) {
+      // If server action redirects, it won't return anything.
+      if (res?.error) {
         setError(res.error)
-      } else if (res.success) {
+      } else if (res?.success) {
         setOpen(false)
-        if (res.username && res.username !== user.username) {
-          window.location.href = `/profile/${res.username}`;
-        }
       }
     })
   }
