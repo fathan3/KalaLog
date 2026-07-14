@@ -40,11 +40,13 @@ export default function EditProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="w-full mt-6 bg-white/5 border-white/10 hover:bg-white/10 hover:text-white transition-all text-zinc-300">
-          Edit Profil
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger 
+        render={
+          <Button variant="outline" className="w-full mt-6 bg-white/5 border-white/10 hover:bg-white/10 hover:text-white transition-all text-zinc-300">
+            Edit Profil
+          </Button>
+        }
+      />
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-zinc-100">
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Profil</DialogTitle>
