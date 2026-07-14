@@ -10,7 +10,7 @@ export async function register(formData: FormData) {
   const password = formData.get("password") as string
 
   if (!name || !email || !password) {
-    throw new Error("Missing required fields")
+    return { error: "Semua kolom wajib diisi" }
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -18,17 +18,30 @@ export async function register(formData: FormData) {
   })
 
   if (existingUser) {
-    throw new Error("Email already registered")
+    return { error: "Email ini sudah terdaftar. Silakan gunakan email lain atau login." }
   }
 
   const hashedPassword = await bcrypt.hash(password, 10)
+
+  let baseUsername = email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, '')
+  let uniqueUsername = baseUsername + Math.floor(Math.random() * 1000)
+  
+  let isUnique = false
+  while (!isUnique) {
+    const existing = await prisma.user.findUnique({ where: { username: uniqueUsername } })
+    if (existing) {
+      uniqueUsername = baseUsername + Math.floor(Math.random() * 10000)
+    } else {
+      isUnique = true
+    }
+  }
 
   await prisma.user.create({
     data: {
       name,
       email,
       password: hashedPassword,
-      username: email.split("@")[0] + Math.floor(Math.random() * 1000), // simple generated handle
+      username: uniqueUsername,
     },
   })
 

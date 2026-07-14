@@ -5,18 +5,7 @@ import Link from "next/link"
 import ThreadCard from "@/components/ThreadCard"
 import EditProfileDialog from "@/components/EditProfileDialog"
 import LogoutButton from "@/components/LogoutButton"
-
-function formatDate(date: Date) {
-  const now = new Date();
-  const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-  if (isToday) return "Hari Ini";
-  const formatter = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short' });
-  return formatter.format(date);
-}
-
-function formatTime(date: Date) {
-  return new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).format(date).replace('.', ':');
-}
+import { formatRelativeTime } from "@/lib/utils"
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const session = await auth()
@@ -26,9 +15,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     where: { username: username },
     include: {
       posts: {
+        where: {
+          parentId: null
+        },
         orderBy: { createdAt: 'desc' },
         include: {
-          _count: { select: { replies: true, likes: true } }
+          likes: true,
+          _count: {
+            select: { replies: true, likes: true }
+          }
         }
       }
     }
@@ -99,13 +94,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           {profileUser.posts.map((post) => (
             <ThreadCard 
               key={post.id}
+              id={post.id}
               author={profileUser.name || "Anonim"}
               handle={profileUser.username || "anon"}
-              time={formatTime(post.createdAt)}
-              date={formatDate(post.createdAt)}
+              time={formatRelativeTime(post.createdAt)}
               content={post.content}
               likes={post._count.likes}
               replies={post._count.replies}
+              isLiked={session?.user?.id ? post.likes.some(like => like.userId === session.user.id) : false}
             />
           ))}
 

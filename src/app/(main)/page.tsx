@@ -5,16 +5,7 @@ import LogoutButton from "@/components/LogoutButton";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-
-function formatDate(date: Date) {
-  const now = new Date();
-  const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-  
-  if (isToday) return "Hari Ini";
-  
-  const formatter = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short' });
-  return formatter.format(date);
-}
+import { formatRelativeTime } from "@/lib/utils";
 
 function formatTime(date: Date) {
   return new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).format(date).replace('.', ':');
@@ -31,13 +22,20 @@ export default async function Home() {
   }
   
   const posts = await prisma.post.findMany({
+    where: {
+      parentId: null
+    },
     orderBy: {
       createdAt: 'desc'
     },
     include: {
       user: true,
+      likes: true,
       _count: {
-        select: { replies: true, likes: true }
+        select: {
+          replies: true,
+          likes: true
+        }
       }
     }
   });
@@ -86,13 +84,14 @@ export default async function Home() {
           {posts.map((post) => (
             <ThreadCard 
               key={post.id}
+              id={post.id}
               author={post.user.name || "Anonim"}
               handle={post.user.username || post.user.email?.split('@')[0] || post.user.id.substring(0, 8)}
-              time={formatTime(post.createdAt)}
-              date={formatDate(post.createdAt)}
+              time={formatRelativeTime(post.createdAt)}
               content={post.content}
               likes={post._count.likes}
               replies={post._count.replies}
+              isLiked={session?.user?.id ? post.likes.some(like => like.userId === session.user.id) : false}
             />
           ))}
 

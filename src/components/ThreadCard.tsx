@@ -1,7 +1,9 @@
 import { Button } from "./ui/button";
 import Link from "next/link";
+import LikeButton from "./LikeButton";
 
 interface ThreadCardProps {
+  id: string;
   author: string;
   handle: string;
   time: string;
@@ -9,9 +11,10 @@ interface ThreadCardProps {
   content: string;
   likes: number;
   replies: number;
+  isLiked: boolean;
 }
 
-export default function ThreadCard({ author, handle, time, date, content, likes, replies }: ThreadCardProps) {
+export default function ThreadCard({ id, author, handle, time, date, content, likes, replies, isLiked }: ThreadCardProps) {
   return (
     <article className="group relative flex gap-6 py-8 transition-all hover:bg-white/[0.01] -mx-4 px-4 rounded-2xl">
       {/* Timeline Node */}
@@ -31,7 +34,7 @@ export default function ThreadCard({ author, handle, time, date, content, likes,
 
       {/* Content */}
       <div className="flex-1 flex flex-col space-y-3">
-        <p className="text-zinc-200 leading-relaxed text-[17px] tracking-wide font-light">
+        <p className="text-zinc-200 leading-relaxed text-[17px] tracking-wide font-light whitespace-pre-wrap">
           {content}
         </p>
         
@@ -48,18 +51,14 @@ export default function ThreadCard({ author, handle, time, date, content, likes,
         
         {/* Interaction (Subtle, appears on hover) */}
         <div className="flex items-center space-x-6 pt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -ml-2">
-          <button className="flex items-center space-x-2 text-zinc-500 hover:text-sky-400 transition-colors">
+          <Link href={`/thread/${id}`} className="flex items-center space-x-2 text-zinc-500 hover:text-sky-400 transition-colors">
             <div className="p-1.5 rounded-full hover:bg-sky-400/10 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <span className="text-xs font-semibold">{replies}</span>
-          </button>
-          <button className="flex items-center space-x-2 text-zinc-500 hover:text-pink-500 transition-colors">
-            <div className="p-1.5 rounded-full hover:bg-pink-500/10 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-            </div>
-            <span className="text-xs font-semibold">{likes}</span>
-          </button>
+          </Link>
+          
+          <LikeButton postId={id} initialLikes={likes} initialLikedByUser={isLiked} />
         </div>
       </div>
     </article>

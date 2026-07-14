@@ -1,8 +1,27 @@
+"use client"
+
 import { register } from "@/actions/auth.actions"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useState, useTransition } from "react"
 
 export default function RegisterPage() {
+  const [error, setError] = useState("")
+  const [isPending, startTransition] = useTransition()
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError("")
+    
+    const formData = new FormData(e.currentTarget)
+    startTransition(async () => {
+      const res = await register(formData)
+      if (res?.error) {
+        setError(res.error)
+      }
+    })
+  }
+
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-background">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -16,7 +35,7 @@ export default function RegisterPage() {
         </div>
         
         <div className="grid gap-6">
-           <form action={register} className="flex flex-col space-y-4">
+           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
              <div className="flex flex-col space-y-2">
                <input 
                  name="name" 
@@ -40,8 +59,9 @@ export default function RegisterPage() {
                  required
                />
              </div>
-             <Button type="submit" className="w-full bg-zinc-100 text-zinc-900 py-6 font-bold hover:bg-white transition-colors">
-               Daftar Sekarang
+             {error && <p className="text-red-400 text-sm font-medium text-center">{error}</p>}
+             <Button disabled={isPending} type="submit" className="w-full bg-zinc-100 text-zinc-900 py-6 font-bold hover:bg-white transition-colors">
+               {isPending ? "Mendaftarkan..." : "Daftar Sekarang"}
              </Button>
            </form>
            
