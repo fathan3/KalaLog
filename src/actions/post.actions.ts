@@ -9,20 +9,25 @@ export async function createPost(content: string) {
     const session = await auth()
     
     if (!session?.user?.id) {
-      throw new Error("Unauthenticated")
+      return { error: "Unauthenticated" }
+    }
+
+    if (!content || !content.trim()) {
+      return { error: "Konten tidak boleh kosong" }
     }
 
     await prisma.post.create({
       data: {
-        content,
+        content: content.trim(),
         userId: session.user.id
       }
     })
 
     revalidatePath("/", "layout")
+    return { success: true }
   } catch (error) {
     console.error("Failed to create post:", error)
-    throw new Error("Failed to create post")
+    return { error: "Failed to create post" }
   }
 }
 

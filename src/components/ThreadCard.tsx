@@ -33,6 +33,16 @@ export default function ThreadCard({
       {/* Timeline Node */}
       <div className="relative flex flex-col items-center shrink-0 w-12 pt-0.5">
         <div className="absolute top-[0.65rem] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-zinc-500 ring-[6px] ring-background shadow-[0_0_12px_rgba(161,161,170,0.5)] group-hover:bg-zinc-100 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-300 z-10"></div>
+        <div className="mt-8 flex flex-col items-center space-y-1 bg-background/90 backdrop-blur-sm z-10 py-1 px-2 rounded-md">
+          <span className="text-sm font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors whitespace-nowrap">
+            {time}
+          </span>
+          {date && (
+            <span className="text-[10px] font-medium text-zinc-600 uppercase tracking-widest text-center leading-tight group-hover:text-zinc-400 transition-colors whitespace-nowrap">
+              {date}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Content */}
@@ -50,11 +60,6 @@ export default function ThreadCard({
           <Link href={`/profile/${handle}`} className="text-sm text-zinc-600 hover:text-zinc-400 transition-colors">
             @{handle}
           </Link>
-          <span className="text-sm text-zinc-700">&bull;</span>
-          <span className="text-sm font-medium text-zinc-500">{time}</span>
-          {date && (
-            <span className="text-xs text-zinc-600">{date}</span>
-          )}
           {isEdited && (
             <span className="text-xs text-zinc-600 italic ml-2">(diedit)</span>
           )}

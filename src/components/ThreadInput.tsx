@@ -14,7 +14,7 @@ export default function ThreadInput() {
     
     startTransition(async () => {
       const result = await createPost(content);
-      if (result.error) {
+      if (result?.error) {
         alert(result.error);
       } else {
         setContent(""); // Clear input on success
