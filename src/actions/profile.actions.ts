@@ -39,7 +39,7 @@ export async function updateProfile(data: { name: string; username: string }) {
     
     revalidatePath("/", "layout")
     
-    return { success: true }
+    return { success: true, username: cleanUsername }
   } catch (error) {
     console.error("Failed to update profile:", error)
     return { error: "Terjadi kesalahan sistem saat memperbarui profil." }
