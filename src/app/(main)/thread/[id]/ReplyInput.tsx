@@ -55,9 +55,6 @@ export default function ReplyInput({ parentId, onSuccess }: ReplyInputProps) {
       </div>
       {error && <p className="text-red-400 text-sm">{error}</p>}
       <div className="flex justify-between items-center">
-        <span className="text-xs text-zinc-600 pl-2">
-          ✨ Mendukung Markdown (*tebal*, _miring_, `kutip miring / backtick`, &gt; kutipan)
-        </span>
         <Button 
           onClick={handleSubmit} 
           disabled={!content.trim() || isPending}
