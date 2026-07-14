@@ -38,7 +38,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   return (
     <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto w-full h-full p-4 md:p-8 mt-12 md:mt-24">
       {/* Left Column (Sticky Profile Identity) */}
-      <aside className="lg:col-span-4 lg:col-start-1 xl:col-start-2">
+      <aside className="lg:col-span-4">
         <div className="sticky top-12 flex flex-col min-h-[calc(100vh-6rem)]">
           <div>
             {/* Back Button */}

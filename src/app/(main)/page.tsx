@@ -69,7 +69,8 @@ export default async function Home() {
               <ThreadInput />
             </div>
           </div>
-          <div className="mt-auto pt-12 pb-6">
+          {/* Desktop Only Logout Button */}
+          <div className="mt-auto pt-12 pb-6 hidden lg:block">
             <LogoutButton />
           </div>
         </div>
