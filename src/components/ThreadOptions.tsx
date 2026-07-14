@@ -16,6 +16,7 @@ export default function ThreadOptions({ postId, initialContent, createdAt }: Thr
   const [isPending, startTransition] = useTransition();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editContent, setEditContent] = useState(initialContent);
   const [error, setError] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
@@ -34,16 +35,20 @@ export default function ThreadOptions({ postId, initialContent, createdAt }: Thr
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleDelete = () => {
+  const handleDeleteClick = () => {
     setIsMenuOpen(false);
-    if (confirm("Apakah Anda yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan.")) {
-      startTransition(async () => {
-        const res = await deletePost(postId);
-        if (res?.error) {
-          alert(res.error);
-        }
-      });
-    }
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    startTransition(async () => {
+      const res = await deletePost(postId);
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setIsDeleteDialogOpen(false);
+      }
+    });
   };
 
   const handleEdit = () => {
@@ -82,7 +87,7 @@ export default function ThreadOptions({ postId, initialContent, createdAt }: Thr
             </div>
           )}
           <button 
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             className="w-full text-left px-4 py-2 text-red-400 hover:bg-red-400/10 transition-colors"
           >
             Hapus
@@ -110,6 +115,27 @@ export default function ThreadOptions({ postId, initialContent, createdAt }: Thr
             </Button>
             <Button onClick={handleEdit} disabled={!editContent.trim() || isPending || editContent === initialContent} className="bg-zinc-100 text-zinc-900 hover:bg-white">
               {isPending ? "Menyimpan..." : "Simpan Perubahan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-white/10 text-zinc-100">
+          <DialogHeader>
+            <DialogTitle className="text-red-400">Hapus Catatan</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-zinc-400 text-sm leading-relaxed">
+              Apakah Anda yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan dan data akan hilang selamanya.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsDeleteDialogOpen(false)} disabled={isPending} className="text-zinc-400 hover:text-zinc-200">
+              Batal
+            </Button>
+            <Button onClick={confirmDelete} disabled={isPending} className="bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 border border-red-500/20">
+              {isPending ? "Menghapus..." : "Ya, Hapus"}
             </Button>
           </DialogFooter>
         </DialogContent>
