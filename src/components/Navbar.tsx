@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 import prisma from "@/lib/prisma";
 import NotificationBadge from "./NotificationBadge";
+import SearchDialog from "./SearchDialog";
 
 export default async function Navbar() {
   const session = await auth();
@@ -39,11 +40,11 @@ export default async function Navbar() {
               </Button>
             </Link>
           )}
-          <Link href="/search">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10 transition-colors group">
+          <SearchDialog currentUserId={session?.user?.id}>
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10 transition-colors group cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400 group-hover:text-white transition-colors"><path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
             </Button>
-          </Link>
+          </SearchDialog>
           {session?.user && (
             <NotificationBadge initialCount={unreadCount} />
           )}
