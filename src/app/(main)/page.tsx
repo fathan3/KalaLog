@@ -30,34 +30,13 @@ export default async function Home() {
     <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pt-12 pb-24">
       {/* Left Column (Sticky Sidebar) */}
       <aside className="lg:col-span-4 flex flex-col space-y-12">
-        <div className="sticky top-12 flex flex-col min-h-[calc(100vh-6rem)]">
+        <div className="sticky top-20 flex flex-col min-h-[calc(100vh-8rem)]">
           <div>
             <Clock />
             
-            {/* Profil Saya Link */}
-            {currentUser && (
-              <Link 
-                href={`/profile/${currentUser.username}`} 
-                className="mt-6 flex items-center p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group"
-              >
-                <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-lg font-bold text-zinc-400 mr-4 group-hover:scale-105 transition-transform">
-                  {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "?"}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-zinc-200">{currentUser.name || "Anonim"}</h3>
-                  <p className="text-xs text-zinc-500">Lihat Profil Saya</p>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600 group-hover:text-zinc-300 transition-colors"><path d="m9 18 6-6-6-6"/></svg>
-              </Link>
-            )}
-
             <div className="mt-8">
               <ThreadInput />
             </div>
-          </div>
-          {/* Desktop Only Logout Button */}
-          <div className="mt-auto pt-12 pb-6 hidden lg:block">
-            <LogoutButton />
           </div>
         </div>
       </aside>

@@ -46,7 +46,7 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto w-full h-full p-4 md:p-8 mt-24">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto w-full h-full p-4 md:p-8 mt-4 md:mt-8">
       <main className="lg:col-span-8 lg:col-start-3 max-w-4xl w-full">
         <div className="mb-8 flex items-center space-x-4">
           <Link href="/" className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-zinc-400">

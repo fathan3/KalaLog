@@ -51,10 +51,10 @@ export default async function ProfilePage({
   const nextCursor = result.nextCursor;
 
   return (
-    <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto w-full h-full p-4 md:p-8 mt-12 md:mt-24">
+    <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto w-full h-full p-4 md:p-8 mt-4 md:mt-8">
       {/* Left Column (Sticky Profile Identity) */}
       <aside className="lg:col-span-4">
-        <div className="sticky top-12 flex flex-col min-h-[calc(100vh-6rem)]">
+        <div className="sticky top-20 flex flex-col min-h-[calc(100vh-8rem)]">
           <div>
             {/* Back Button */}
             <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white transition-colors mb-8 group">
@@ -88,11 +88,6 @@ export default async function ProfilePage({
             </div>
           </div>
           
-          {isOwnProfile && (
-            <div className="mt-auto pt-12 pb-6">
-              <LogoutButton />
-            </div>
-          )}
         </div>
       </aside>
 
