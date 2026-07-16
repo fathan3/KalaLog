@@ -42,7 +42,7 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
 
   const isLikedByMe = (likesArray: any[]) => {
     if (!session?.user?.id) return false;
-    return likesArray.some((like: any) => like.userId === session.user.id);
+    return likesArray.some((like: any) => like.userId === session?.user?.id);
   };
 
   return (
@@ -80,7 +80,7 @@ export default async function ThreadView({ params }: { params: Promise<{ id: str
         </div>
 
         <div className="mt-8 mb-12">
-          <ReplyInput postId={post.id} />
+          <ReplyInput parentId={post.id} />
         </div>
 
         {post.replies.length > 0 && (

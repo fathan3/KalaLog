@@ -29,16 +29,19 @@ export default function ThreadInput() {
     }
   }, [content]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (isDraft: boolean = false) => {
     if (!content.trim() || isPending) return;
     
     startTransition(async () => {
-      const result = await createPost(content);
+      const result = await createPost(content, isDraft);
       if (result?.error) {
         alert(result.error);
       } else {
         setContent(""); // Clear input on success
         localStorage.removeItem(DRAFT_KEY); // Clear draft
+        if (isDraft) {
+          alert("Draft berhasil disimpan!");
+        }
       }
     });
   };
@@ -61,9 +64,17 @@ export default function ThreadInput() {
           disabled={isPending}
         />
       </div>
-      <div className="flex justify-end mt-2">
+      <div className="flex justify-end mt-2 gap-3">
         <Button 
-          onClick={handleSubmit}
+          onClick={() => handleSubmit(true)}
+          variant="outline"
+          className="rounded-full px-6 py-6 text-md font-bold tracking-wide border-white/10 hover:bg-white/5 transition-all disabled:opacity-50" 
+          disabled={!content.trim() || isPending}
+        >
+          {isPending ? "Menyimpan..." : "Simpan Draft"}
+        </Button>
+        <Button 
+          onClick={() => handleSubmit(false)}
           className="rounded-full px-8 py-6 text-md font-bold tracking-wide bg-zinc-100 text-zinc-900 shadow-xl shadow-white/5 hover:bg-white hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100" 
           disabled={!content.trim() || isPending}
         >

@@ -34,6 +34,10 @@ export default async function ProfilePage({
     }
   })
 
+  if (!profileUser) {
+    notFound()
+  }
+
   const isOwnProfile = session?.user?.id === profileUser.id
   
   const isBookmarksTab = tab === "bookmarks" && isOwnProfile;
@@ -45,10 +49,6 @@ export default async function ProfilePage({
   });
   const posts = result.posts;
   const nextCursor = result.nextCursor;
-
-  if (!profileUser) {
-    notFound()
-  }
 
   return (
     <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto w-full h-full p-4 md:p-8 mt-12 md:mt-24">

@@ -12,6 +12,7 @@ interface Post {
   createdAt: Date;
   updatedAt: Date;
   userId: string;
+  viewCount?: number;
   user: {
     id: string;
     name: string | null;
@@ -32,6 +33,7 @@ interface InfiniteFeedProps {
   currentUserId?: string;
   searchQuery?: string;
   bookmarksOnly?: boolean;
+  isDraft?: boolean;
 }
 
 export default function InfiniteFeed({
@@ -40,7 +42,8 @@ export default function InfiniteFeed({
   username,
   currentUserId,
   searchQuery,
-  bookmarksOnly
+  bookmarksOnly,
+  isDraft
 }: InfiniteFeedProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [nextCursor, setNextCursor] = useState<string | undefined>(initialNextCursor);
@@ -51,7 +54,7 @@ export default function InfiniteFeed({
     if (!nextCursor || isLoading) return;
     
     setIsLoading(true);
-    const result = await getPosts({ cursor: nextCursor, limit: 10, username, query: searchQuery, bookmarksOnly });
+    const result = await getPosts({ cursor: nextCursor, limit: 10, username, query: searchQuery, bookmarksOnly, isDraft });
     
     if (result.posts && result.posts.length > 0) {
       setPosts(prev => {
@@ -64,9 +67,8 @@ export default function InfiniteFeed({
     } else {
       setNextCursor(undefined);
     }
-    
     setIsLoading(false);
-  }, [nextCursor, isLoading, username, searchQuery, bookmarksOnly]);
+  }, [nextCursor, isLoading, username, searchQuery, bookmarksOnly, isDraft]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -118,6 +120,7 @@ export default function InfiniteFeed({
           isOwner={currentUserId === post.userId}
           createdAt={post.createdAt}
           updatedAt={post.updatedAt}
+          viewCount={post.viewCount}
         />
       ))}
       

@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 
-export async function createPost(content: string) {
+export async function createPost(content: string, isDraft: boolean = false) {
   try {
     const session = await auth()
     
@@ -19,7 +19,8 @@ export async function createPost(content: string) {
     await prisma.post.create({
       data: {
         content: content.trim(),
-        userId: session.user.id
+        userId: session.user.id,
+        isDraft
       }
     })
 
@@ -56,6 +57,18 @@ export async function toggleLike(postId: string) {
           postId: postId
         }
       });
+      
+      const post = await prisma.post.findUnique({ where: { id: postId }, select: { userId: true } });
+      if (post && post.userId !== session.user.id) {
+        await prisma.notification.create({
+          data: {
+            userId: post.userId,
+            senderId: session.user.id,
+            type: "LIKE",
+            postId: postId
+          }
+        });
+      }
     }
 
     revalidatePath("/", "layout");
@@ -117,6 +130,18 @@ export async function replyToPost(postId: string, content: string) {
         parentId: postId
       }
     });
+
+    const parentPost = await prisma.post.findUnique({ where: { id: postId }, select: { userId: true } });
+    if (parentPost && parentPost.userId !== session.user.id) {
+      await prisma.notification.create({
+        data: {
+          userId: parentPost.userId,
+          senderId: session.user.id,
+          type: "REPLY",
+          postId: postId
+        }
+      });
+    }
 
     revalidatePath("/", "layout");
     return { success: true };
@@ -205,18 +230,26 @@ export async function getPosts({
   limit = 10,
   username,
   query,
-  bookmarksOnly
+  bookmarksOnly,
+  isDraft = false
 }: {
   cursor?: string;
   limit?: number;
   username?: string;
   query?: string;
   bookmarksOnly?: boolean;
+  isDraft?: boolean;
 }) {
   try {
-    const whereCondition: any = { parentId: null };
+    const whereCondition: any = { parentId: null, isDraft };
     
-    if (username) {
+    if (isDraft) {
+      const session = await auth();
+      if (!session?.user?.id) return { posts: [] };
+      whereCondition.userId = session.user.id;
+    }
+
+    if (username && !isDraft) {
       const targetUser = await prisma.user.findUnique({
         where: { username }
       });
@@ -224,11 +257,23 @@ export async function getPosts({
       whereCondition.userId = targetUser.id;
     }
 
-    if (query) {
-      whereCondition.content = {
-        contains: query,
-        mode: "insensitive"
-      };
+    if (query && !isDraft) {
+      whereCondition.OR = [
+        {
+          content: {
+            contains: query,
+            mode: "insensitive"
+          }
+        },
+        {
+          user: {
+            username: {
+              contains: query,
+              mode: "insensitive"
+            }
+          }
+        }
+      ];
     }
 
     if (bookmarksOnly) {
@@ -256,6 +301,15 @@ export async function getPosts({
         _count: { select: { replies: true, likes: true } },
       },
     });
+
+    if (posts.length > 0 && !isDraft) {
+      const postIds = posts.map(p => p.id);
+      // Increment view count asynchronously to avoid blocking the response
+      prisma.post.updateMany({
+        where: { id: { in: postIds } },
+        data: { viewCount: { increment: 1 } }
+      }).catch(err => console.error("Failed to increment view count", err));
+    }
 
     let nextCursor: string | undefined = undefined;
     if (posts.length > limit) {

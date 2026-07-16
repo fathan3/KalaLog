@@ -19,10 +19,11 @@ interface ThreadCardProps {
   isOwner?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  viewCount?: number;
 }
 
 export default function ThreadCard({ 
-  id, author, handle, time, date, content, likes, replies, isLiked, isBookmarked = false, isOwner, createdAt, updatedAt 
+  id, author, handle, time, date, content, likes, replies, isLiked, isBookmarked = false, isOwner, createdAt, updatedAt, viewCount = 0 
 }: ThreadCardProps) {
   
   const isEdited = createdAt && updatedAt && new Date(updatedAt).getTime() - new Date(createdAt).getTime() > 1000;
@@ -74,6 +75,12 @@ export default function ThreadCard({
             </div>
             <span className="text-xs font-semibold">{replies}</span>
           </Link>
+          <div className="flex items-center space-x-2 text-zinc-500 hover:text-emerald-400 transition-colors cursor-default">
+            <div className="p-1.5 rounded-full hover:bg-emerald-400/10 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <span className="text-xs font-semibold">{viewCount}</span>
+          </div>
           <LikeButton postId={id} initialLikes={likes} initialLikedByUser={isLiked} />
           
           <div className="flex items-center space-x-4">

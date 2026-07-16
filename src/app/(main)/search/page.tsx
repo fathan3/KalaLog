@@ -36,7 +36,7 @@ export default async function SearchPage({
             type="text"
             name="q"
             defaultValue={query}
-            placeholder="Cari kata kunci dalam catatan..."
+            placeholder="Cari kata kunci atau username..."
             className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all text-lg shadow-inner"
             autoFocus
           />
