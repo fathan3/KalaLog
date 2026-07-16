@@ -8,6 +8,41 @@ import InfiniteFeed from "@/components/InfiniteFeed"
 import { getPosts } from "@/actions/post.actions"
 import LogoutButton from "@/components/LogoutButton"
 import { formatRelativeTime } from "@/lib/utils"
+import { Metadata } from "next"
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ username: string }> 
+}): Promise<Metadata> {
+  const { username } = await params;
+  const user = await prisma.user.findUnique({ where: { username } });
+  
+  if (!user) {
+    return {
+      title: "Profil Tidak Ditemukan | KalaLog"
+    };
+  }
+
+  const title = `${user.name || "Anonim"} (@${user.username}) | KalaLog`;
+  const description = `Lihat catatan waktu dari ${user.name || user.username} di KalaLog.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      url: `/profile/${username}`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    }
+  };
+}
 
 export default async function ProfilePage({ 
   params,

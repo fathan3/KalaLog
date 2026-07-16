@@ -5,6 +5,44 @@ import ThreadCard from "@/components/ThreadCard";
 import Link from "next/link";
 import { formatRelativeTime } from "@/lib/utils";
 import ReplyInput from "./ReplyInput";
+import { Metadata } from "next";
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}): Promise<Metadata> {
+  const { id } = await params;
+  const post = await prisma.post.findUnique({
+    where: { id },
+    include: { user: true }
+  });
+  
+  if (!post) {
+    return {
+      title: "Utas Tidak Ditemukan | KalaLog"
+    };
+  }
+
+  const title = `Utas oleh ${post.user.name || "Anonim"} (@${post.user.username}) | KalaLog`;
+  const description = post.content.length > 160 ? post.content.substring(0, 157) + "..." : post.content;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      url: `/thread/${id}`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    }
+  };
+}
 
 export default async function ThreadView({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

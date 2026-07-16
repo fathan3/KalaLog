@@ -17,6 +17,18 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "KalaLog",
   description: "Platform microblogging modern.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  openGraph: {
+    title: "KalaLog",
+    description: "Platform microblogging modern.",
+    type: "website",
+    siteName: "KalaLog",
+  },
+  twitter: {
+    card: "summary",
+    title: "KalaLog",
+    description: "Platform microblogging modern.",
+  }
 };
 
 export default function RootLayout({

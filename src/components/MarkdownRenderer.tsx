@@ -8,6 +8,9 @@ interface MarkdownRendererProps {
 }
 
 export default function MarkdownRenderer({ content, className = "", isQuote = false }: MarkdownRendererProps) {
+  // Convert @username to markdown links
+  const processedContent = content.replace(/(^|\s)@([a-zA-Z0-9_]+)/g, '$1[@$2](/profile/$2)');
+
   return (
     <div className={`prose prose-invert prose-zinc max-w-none ${className}`}>
       <ReactMarkdown
@@ -84,7 +87,7 @@ export default function MarkdownRenderer({ content, className = "", isQuote = fa
           h3: ({ node, ...props }) => <h3 className="text-base font-bold text-zinc-100 mb-2 mt-4" {...props} />,
         }}
       >
-        {content}
+        {processedContent}
       </ReactMarkdown>
     </div>
   );
