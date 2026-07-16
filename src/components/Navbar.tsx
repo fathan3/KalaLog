@@ -3,12 +3,23 @@ import { Button } from "./ui/button";
 import { getUnreadNotificationCount } from "@/actions/notification.actions";
 import { auth } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
+import prisma from "@/lib/prisma";
 
 export default async function Navbar() {
   const session = await auth();
   let unreadCount = 0;
+  let username = session?.user?.username;
+
   if (session?.user) {
     unreadCount = await getUnreadNotificationCount();
+    
+    if (!username) {
+      const dbUser = await prisma.user.findUnique({ 
+        where: { id: session.user.id },
+        select: { username: true }
+      });
+      username = dbUser?.username;
+    }
   }
 
   return (
@@ -42,8 +53,8 @@ export default async function Navbar() {
               </Button>
             </Link>
           )}
-          {session?.user && (
-            <Link href={`/profile/${session.user.username}`}>
+          {session?.user && username && (
+            <Link href={`/profile/${username}`}>
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10 transition-colors group">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400 group-hover:text-white transition-colors"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </Button>

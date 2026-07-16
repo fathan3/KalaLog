@@ -27,6 +27,15 @@ export default function ThreadCard({
 }: ThreadCardProps) {
   
   const isEdited = createdAt && updatedAt && new Date(updatedAt).getTime() - new Date(createdAt).getTime() > 1000;
+  
+  let displayTime = time;
+  let displayDate = date;
+
+  if (time.includes(", ")) {
+    const parts = time.split(", ");
+    displayDate = parts[0];
+    displayTime = parts[1];
+  }
 
   return (
     <article className="group relative flex gap-6 py-8 transition-all hover:bg-white/[0.01] -mx-4 px-4 rounded-2xl">
@@ -39,11 +48,11 @@ export default function ThreadCard({
         <div className="absolute top-[0.65rem] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-zinc-500 ring-[6px] ring-background shadow-[0_0_12px_rgba(161,161,170,0.5)] group-hover:bg-zinc-100 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-300 z-10"></div>
         <div className="mt-8 flex flex-col items-center space-y-1 bg-background/90 backdrop-blur-sm z-10 py-1 px-2 rounded-md">
           <span className="text-sm font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors whitespace-nowrap">
-            {time}
+            {displayTime}
           </span>
-          {date && (
+          {displayDate && (
             <span className="text-[10px] font-medium text-zinc-600 uppercase tracking-widest text-center leading-tight group-hover:text-zinc-400 transition-colors whitespace-nowrap">
-              {date}
+              {displayDate}
             </span>
           )}
         </div>
